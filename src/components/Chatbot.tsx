@@ -410,7 +410,7 @@ export default function Chatbot({ userId }: ChatbotProps) {
   const [isProcessing768Embeddings, setIsProcessing768Embeddings] = useState(false)
   
   // 유사도 임계값 (0.1 ~ 0.5)
-  const [similarityThreshold, setSimilarityThreshold] = useState(0.4)
+  const [similarityThreshold, setSimilarityThreshold] = useState(0.3)
 
   // 1536 임베딩 처리 핸들러
   const handle1536Embeddings = async () => {
