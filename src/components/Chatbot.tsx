@@ -8,8 +8,7 @@ import JobDetailModal from './JobDetailModal'
 import { useChatHistory, useInfiniteChatHistory, useSaveChatMessage, useDeleteChatHistory } from '@/hooks/useChatApi'
 import { useChatStore } from '@/stores/chatStore'
 
-//const NEXTJS_ROUTE = '/api/chat' //1) Next.js에서 자제 라우팅 for openai embedding
-const FASTAPI_ROUTE = 'http://localhost:8000/chat' //2) FastAPI 서버 연동 for sentence-transformers
+const FASTAPI_SERVER = process.env.NEXT_PUBLIC_FASTAPI_SERVER || 'http://localhost:8001'
 
 // UUID 생성 함수 (고유 ID 보장)
 const generateUniqueId = (() => {
@@ -424,7 +423,7 @@ export default function Chatbot({ userId }: ChatbotProps) {
     setIsProcessing1536Embeddings(true)
 
     try {
-      const response = await fetch('http://localhost:8000/admin/update_embeddings1536', {
+      const response = await fetch(FASTAPI_SERVER + '/admin/update_embeddings1536', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -466,7 +465,7 @@ export default function Chatbot({ userId }: ChatbotProps) {
     setIsProcessing768Embeddings(true)
 
     try {
-      const response = await fetch('http://localhost:8000/admin/update_embeddings768', {
+      const response = await fetch(FASTAPI_SERVER + '/admin/update_embeddings768', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -573,10 +572,7 @@ export default function Chatbot({ userId }: ChatbotProps) {
     }
     
     try {
-      // API로 요청 - gigchat_fastapi의 chat.py 라우터 호출
-      // searchMode === 'add': 일자리 조건 추가 → langgraph로 처리 (chat_graph.py)
-      // searchMode === 'search': 검색 → langgraph로 처리
-      const route = FASTAPI_ROUTE  // http://localhost:8000/chat
+      const route = FASTAPI_SERVER + "/chat"
       
       console.log('[handleSend] Calling FastAPI:', {
         route,
