@@ -1,4 +1,4 @@
-# Respable Chat MCP
+# gigchat_nextjs
 
 Next.js 기반의 AI 챗봇 프로젝트입니다.
 
@@ -36,7 +36,7 @@ npm start
 ## 프로젝트 구조
 
 ```
-respable_chat_mcp/
+gigchat_nextjs/
 ├── src/
 │   ├── app/              # App Router 페이지
 │   │   ├── layout.tsx    # 루트 레이아웃
