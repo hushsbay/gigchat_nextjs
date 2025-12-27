@@ -9,6 +9,7 @@ import { useChatHistory, useInfiniteChatHistory, useSaveChatMessage, useDeleteCh
 import { useChatStore } from '@/stores/chatStore'
 
 const FASTAPI_SERVER = process.env.NEXT_PUBLIC_FASTAPI_SERVER || 'http://localhost:8001'
+const hi_msg = '안녕하세요! AI 챗봇입니다.\n원하시는 일자리 조건을 자유롭게 말씀해주세요.\n예: "수원에서 주말 알바 구해요, 시급 15,000원 이상"'
 
 // UUID 생성 함수 (고유 ID 보장)
 const generateUniqueId = (() => {
@@ -264,7 +265,13 @@ export default function Chatbot({ userId }: ChatbotProps) {
   
   // ✅ TanStack Query 무한 스크롤 데이터를 Zustand로 동기화 : 배열내 값이 변할 때만 실행
   useEffect(() => {
-    if (infiniteChatData?.pages && infiniteChatData.pages.length > 0) {
+    // ✅ 로딩 중이면 실행하지 않음 (데이터가 완전히 로드될 때까지 대기)
+    if (isLoadingHistory) {
+      return
+    }
+
+    // ✅ DB에 메시지가 있는 경우
+    if (infiniteChatData?.pages && infiniteChatData.pages.length > 0 && infiniteChatData.pages[0].messages.length > 0) {
       // 모든 페이지의 메시지를 하나로 합침
       const dbMessages = infiniteChatData.pages.flatMap((page, pageIndex) => 
         page.messages.map((msg: any, msgIndex: number) => ({
@@ -312,21 +319,24 @@ export default function Chatbot({ userId }: ChatbotProps) {
           setIsScrollEnabled(true)
         }, 500)
       }
-    } else if (infiniteChatData?.pages && infiniteChatData.pages.length === 1 && infiniteChatData.pages[0].messages.length === 0) {
-      // ✅ DB에 메시지가 정말 없을 때만 환영 메시지 표시 (첫 페이지가 로드되고 메시지가 0개일 때)
-      const currentMessages = useChatStore.getState().messages
+    } 
+    // ✅ DB에 메시지가 정말 없을 때만 환영 메시지 표시
+    else if (infiniteChatData?.pages && infiniteChatData.pages.length === 1 && infiniteChatData.pages[0].messages.length === 0) {
+      const currentMessages = useChatStore.getState().messages      
       if (currentMessages.length === 0 || currentMessages[0].id !== 'welcome') {
         const welcomeMessage: Message = {
           id: 'welcome',
-          text: '안녕하세요! AI Respable 챗봇입니다.\n\n원하시는 일자리 조건을 자유롭게 말씀해주세요.\n예: "수원에서 주말 알바 구해요, 시급 15,000원 이상"',
+          text: hi_msg,
           sender: 'bot',
           timestamp: new Date()
         }
+        console.log("✅ 환영 메시지 설정:", welcomeMessage.text)
         setMessages([welcomeMessage])
+        console.log("✅ setMessages 완료, 현재 messages:", useChatStore.getState().messages)
       }
       setIsScrollEnabled(true)
     }
-  }, [infiniteChatData, isScrollEnabled, setMessages])
+  }, [infiniteChatData, isLoadingHistory])
 
   // 최초 마운트 시에만 실행 (빈 배열일 경우) : 최초 로드: 일자리 조건과 검색 결과 로드
   useEffect(() => {
@@ -516,7 +526,7 @@ export default function Chatbot({ userId }: ChatbotProps) {
         
         const initialMessage = {
           id: generateUniqueId(),
-          text: '안녕하세요! AI Respable 챗봇입니다. 어떤 도움이 필요하신가요?',
+          text: hi_msg,
           sender: 'bot' as const,
           timestamp: new Date()
         }
