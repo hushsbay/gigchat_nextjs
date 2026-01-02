@@ -168,7 +168,7 @@ export default function TestPage() {
                   ⚙️ 환경 설정
                 </h3>
                 <div className="space-y-1 text-sm">
-                  <p>✓ DATABASE_URL 설정됨</p>
+                  <p>✓ DB_URL 설정됨</p>
                   <p>✓ OPENAI_API_KEY 설정됨</p>
                   <p>✓ Vector DB (pgvector) 사용</p>
                   <p>✓ Qwen 3 모델 준비됨</p>

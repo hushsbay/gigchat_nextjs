@@ -6,7 +6,7 @@ let pool: Pool | null = null
 export function getPool() {
   if (!pool) {
     pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: process.env.DB_URL,
       ssl: {
         rejectUnauthorized: false
       },
