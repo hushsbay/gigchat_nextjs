@@ -9,12 +9,12 @@ export default function BlockedPage() {
         <p className="text-gray-600 mb-6">
           이 페이지는 인증된 사용자만 접근할 수 있습니다.
         </p>
-        <a
+        {/* <a
           href="http://localhost:3000"
           className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors inline-block"
         >
           메인 페이지로 이동
-        </a>
+        </a> */}
       </div>
     </div>
   )
