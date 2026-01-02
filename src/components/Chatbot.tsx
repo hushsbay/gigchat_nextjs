@@ -8,9 +8,6 @@ import JobDetailModal from './JobDetailModal'
 import { useChatHistory, useInfiniteChatHistory, useSaveChatMessage, useDeleteChatHistory } from '@/hooks/useChatApi'
 import { useChatStore } from '@/stores/chatStore'
 
-// const FASTAPI_SERVER = process.env.NEXT_PUBLIC_FASTAPI_SERVER //.env 설명 참조
-const FASTAPI_SERVER = location.hostname == "localhost" ? process.env.NEXT_PUBLIC_FASTAPI_LOCAL : process.env.NEXT_PUBLIC_FASTAPI_SERVER
-
 const hi_msg = '안녕하세요! AI 챗봇입니다.\n원하시는 일자리 조건을 자유롭게 말씀해주세요.\n예: "수원에서 주말 알바 구해요, 시급 15,000원 이상"'
 
 // UUID 생성 함수 (고유 ID 보장)
@@ -67,6 +64,7 @@ export default function Chatbot({ userId }: ChatbotProps) {
   const deleteMutation = useDeleteChatHistory()
   
   const [isClient, setIsClient] = useState(false)
+  const [fastapiServer, setFastapiServer] = useState('')
   
   const [inputText, setInputText] = useState('')
   const [isTyping, setIsTyping] = useState(false)
@@ -243,6 +241,13 @@ export default function Chatbot({ userId }: ChatbotProps) {
   // 최초 마운트 시에만 실행 (빈 배열일 경우) : 클라이언트 마운트 후 초기화 
   useEffect(() => {
     setIsClient(true)
+    
+    // FastAPI 서버 URL 설정
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
+    const serverUrl = hostname === 'localhost' 
+      ? process.env.NEXT_PUBLIC_FASTAPI_LOCAL || 'http://localhost:8082'
+      : process.env.NEXT_PUBLIC_FASTAPI_SERVER || 'https://albahero.com:545'
+    setFastapiServer(serverUrl)
     
     // sessionId 생성 또는 로드
     let sid = localStorage.getItem('chatSessionId')
@@ -435,7 +440,7 @@ export default function Chatbot({ userId }: ChatbotProps) {
     setIsProcessing1536Embeddings(true)
 
     try {
-      const response = await fetch(FASTAPI_SERVER + '/admin/update_embeddings1536', {
+      const response = await fetch(fastapiServer + '/admin/update_embeddings1536', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -477,7 +482,7 @@ export default function Chatbot({ userId }: ChatbotProps) {
     setIsProcessing768Embeddings(true)
 
     try {
-      const response = await fetch(FASTAPI_SERVER + '/admin/update_embeddings768', {
+      const response = await fetch(fastapiServer + '/admin/update_embeddings768', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -584,8 +589,7 @@ export default function Chatbot({ userId }: ChatbotProps) {
     }
     
     try {
-      const route = FASTAPI_SERVER + "/chat"
-      alert(FASTAPI_SERVER+"==="+process.env.FASTAPI_URL)
+      const route = fastapiServer + "/chat"
       console.log('[handleSend] Calling FastAPI:', {
         route,
         isSearch,
