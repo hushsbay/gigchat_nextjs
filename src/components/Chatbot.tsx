@@ -8,7 +8,9 @@ import JobDetailModal from './JobDetailModal'
 import { useChatHistory, useInfiniteChatHistory, useSaveChatMessage, useDeleteChatHistory } from '@/hooks/useChatApi'
 import { useChatStore } from '@/stores/chatStore'
 
-const FASTAPI_SERVER = process.env.FASTAPI_URL
+// const FASTAPI_SERVER = process.env.NEXT_PUBLIC_FASTAPI_SERVER //.env 설명 참조
+const FASTAPI_SERVER = location.hostname == "localhost" ? process.env.NEXT_PUBLIC_FASTAPI_LOCAL : process.env.NEXT_PUBLIC_FASTAPI_SERVER
+
 const hi_msg = '안녕하세요! AI 챗봇입니다.\n원하시는 일자리 조건을 자유롭게 말씀해주세요.\n예: "수원에서 주말 알바 구해요, 시급 15,000원 이상"'
 
 // UUID 생성 함수 (고유 ID 보장)
@@ -583,6 +585,7 @@ export default function Chatbot({ userId }: ChatbotProps) {
     
     try {
       const route = FASTAPI_SERVER + "/chat"
+      alert(FASTAPI_SERVER+"==="+process.env.FASTAPI_URL)
       console.log('[handleSend] Calling FastAPI:', {
         route,
         isSearch,
