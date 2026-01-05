@@ -746,9 +746,9 @@ export default function Chatbot({ userId }: ChatbotProps) {
           {/* 헤더 */}
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold mb-1">AI 챗봇 일자리 검색</h1>
-              <p className="text-gray-600 text-sm">
-                원하시는 조건을 자유롭게 말씀해주세요
+              <h1 className="text-2xl font-bold mb-1">AI 챗봇 일자리 검색 (Test)</h1>
+              <p className="text-gray-600 text-sm" style={{ color:'red', fontWeight:'bold' }}>
+                현재 검색은 jobs1, 저장은 jobs 테이블로 처리됨을 유의 !!!! 
               </p>
             </div>
             <div className="flex items-center gap-2">

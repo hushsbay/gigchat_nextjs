@@ -483,15 +483,27 @@ export async function saveSearchResults(jobseekerId: number, jobIds: number[]): 
   try {
     await pool.query('BEGIN')
     
+    // 존재하는 job_id만 필터링
+    const validJobIdsResult = await pool.query(
+      'SELECT id FROM jobs WHERE id = ANY($1::int[])',
+      [jobIds]
+    )
+    const validJobIds = validJobIdsResult.rows.map(row => row.id)
+    
+    if (validJobIds.length === 0) {
+      await pool.query('ROLLBACK')
+      return []
+    }
+    
     // 기존 데이터 삭제
     await pool.query(
       'DELETE FROM result_search WHERE jobseeker_id = $1',
       [jobseekerId]
     )
     
-    // 신규 데이터 저장
+    // 신규 데이터 저장 (유효한 job_id만)
     const results: ResultSearch[] = []
-    for (const jobId of jobIds) {
+    for (const jobId of validJobIds) {
       const result = await pool.query(
         `INSERT INTO result_search (jobseeker_id, job_id, created_at) 
          VALUES ($1, $2, NOW()) 
